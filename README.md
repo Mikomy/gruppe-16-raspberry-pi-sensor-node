@@ -4,7 +4,7 @@
 This project involves building a Raspberry Pi-based sensor node that measures temperature and humidity using a DHT sensor, publishes the data to an MQTT broker, and sends it to a RESTful web service.
 
 ## Features
-- Measures temperature and humidity using a DHT11/DHT22 sensor.
+- Measures temperature and humidity using a DHT11 sensor.
 - Publishes sensor data to an MQTT broker.
 - Sends data to a RESTful web service.
 - Node-RED and Streamsheets integration.
@@ -16,5 +16,5 @@ node-red/: Contains the Node-RED flow for MQTT and RESTful web service integrati
 streamsheets/: Contains configuration files for Streamsheets integration.
 
 **Credits**
-*Andreas Doetzl*
+*Andreas Doetzl*,
 *Miklos Komlosy*
