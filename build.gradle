@@ -2,11 +2,11 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'checkstyle'
 }
 
 group = 'com.Team16'
 version = '0.0.1-SNAPSHOT'
-
 
 java {
 	toolchain {
@@ -14,14 +14,15 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
+
 
 repositories {
 	mavenCentral()
+}
+
+checkstyle {
+	toolVersion = '10.0'
+	configDirectory = file("config/checkstyle")
 }
 
 dependencies {
@@ -36,10 +37,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	checkstyle 'com.puppycrawl.tools:checkstyle:10.0'
 }
-
-
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+
+
