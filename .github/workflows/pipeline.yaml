@@ -7,6 +7,19 @@ on:
   pull_request:
 
 jobs:
+  conform:
+    runs-on: ubuntu-latest
+    name: Conform
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: siderolabs/conform@v0.1.0-alpha.27
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   lint:
     runs-on: ubuntu-latest
     name: Lint Java Code
@@ -24,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Unit Tests
     strategy:
+      max-parallel: 4
       matrix:
         java-version: [ "21"]
 
@@ -46,13 +60,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Spring Boot Application
+    needs:
+      - test
+      - check
     strategy:
+      max-parallel: 4
       matrix:
         java-version: [ "21"]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -61,11 +81,15 @@ jobs:
           distribution: "corretto"
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
+      - name: Build Jar
+        run: ./gradlew bootJar
 
-      - name: Build Application
-        run: ./gradlew build
+      - uses: actions/upload-artifact@v4
+        with:
+            name: spring-boot-jar
+            path: build/libs/bswe.jar
 
   check:
     runs-on: ubuntu-latest
@@ -78,6 +102,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -86,7 +112,7 @@ jobs:
           distribution: "corretto"
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run Checks
         run: ./gradlew check
