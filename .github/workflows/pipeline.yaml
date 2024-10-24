@@ -1,0 +1,116 @@
+name: Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint Java Code
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle
+        uses: gradle/setup-gradle@v2
+
+      - name: Lint Java Code (checkstyle)
+        run: ./gradlew checkstyleMain checkstyleTest
+
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Tests
+    strategy:
+      matrix:
+        java-version: [ "21"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "${{ matrix.java-version }}"
+          distribution: 'corretto'
+
+      - name: Setup Gradle
+        uses: gradle/setup-gradle@v2
+
+      - name: Run Unit Tests
+        run: ./gradlew test
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Spring Boot Application
+    strategy:
+      matrix:
+        java-version: [ "21"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "${{ matrix.java-version }}"
+          distribution: "corretto"
+
+      - name: Setup Gradle
+        uses: gradle/setup-buil-action@v2
+
+      - name: Build Application
+        run: ./gradlew build
+
+  check:
+    runs-on: ubuntu-latest
+    name: Code Quality Checks
+    strategy:
+      max-parallel: 4
+      matrix:
+        java-version: [ "21"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "${{ matrix.java-version }}"
+          distribution: "corretto"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run Checks
+        run: ./gradlew check
+        continue-on-error: true
+
+#  angular-build:
+#    runs-on: ubuntu-latest
+#    name: Build Angular Application
+#    needs: build
+#    strategy:
+#      max-parallel: 4
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: "16"
+#
+#      - name: Install Angular Dependencies
+ #       run: npm install
+ #
+ #     - name: Run Tests
+ #       run: npm test
+ #
+ #     - name: Build Angular Project
+ #       run: npm run build
