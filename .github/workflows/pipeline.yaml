@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Gradle
-        uses: gradle/setup-gradle@v2
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Lint Java Code (checkstyle)
         run: ./gradlew checkstyleMain checkstyleTest
@@ -38,7 +38,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Setup Gradle
-        uses: gradle/setup-gradle@v2
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run Unit Tests
         run: ./gradlew test
@@ -61,7 +61,8 @@ jobs:
           distribution: "corretto"
 
       - name: Setup Gradle
-        uses: gradle/setup-buil-action@v2
+        uses: gradle/actions/setup-build-action@v2
+
 
       - name: Build Application
         run: ./gradlew build
